@@ -1,0 +1,11 @@
+<div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+          <ul class="messages">
+            {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+            </ul>
+      </div>
+    </div>
+</div>

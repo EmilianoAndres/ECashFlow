@@ -1,0 +1,168 @@
+{% extends 'admin/base.html' %}
+{% block title %}Home - ECashFlow{% endblock %}
+
+{% block content %}
+<body>
+    <div class="container mt-4">
+        <h2 class="text-center">Administración de Clientes</h2>
+
+        <!-- Search form for filtering by Email, SSN, Phone Number, and Inactive checkbox -->
+        <form method="GET" action="{% url 'AdminDashboardCustomers' %}" class="mb-4">
+            <div class="row justify-content-center">
+                <div class="col-md-4">
+                    <input type="text" class="form-control mb-2" name="search" placeholder="Email o Cuit">
+                </div>
+            </div>
+
+            <!-- Search button -->
+            <div class="text-center mt-3">
+                <button type="submit" class="btn btn-primary">Buscar</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Customer details, wallet details, and bank account details tables -->
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card text-white mb-3" style="background-color: #6000fc;">
+                <div class="card-header text-center">Detalles de Cliente para: {{ customer.full_name }}</div>
+                <div class="card-body">
+                    <table class="table table-bordered table-striped table-dark">
+                        <tbody>
+                            <tr>
+                                <th>Customer ID</th>
+                                <td>{{ customer.id }}</td>
+                            </tr>
+                            <tr>
+                                <th>Full Name</th>
+                                <td>{{ customer.full_name }}</td>
+                            </tr>
+                            <tr>
+                                <th>Email</th>
+                                <td>{{ customer.email }}</td>
+                            </tr>
+                            <tr>
+                                <th>Phone Number</th>
+                                <td>{{ customer.phone_number }}</td>
+                            </tr>
+                            <tr>
+                                <th>Status</th>
+                                <td>{{ customer.is_active|yesno:"Activo,Inactivo" }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- Enable/Disable Button -->
+            <div class="text-center">
+                <form method="GET" action="{% url 'AdminDashboardCustomers' %}" class="mb-4 text-center">
+                    <input type="hidden" name="customer_id" value="{{ customer.id }}">
+                    <input type="hidden" name="action" value="{% if customer.is_active %}disable{% else %}enable{% endif %}">
+                    <button type="submit" class="btn btn-primary">
+                        {% if customer.is_active %} Deshabilitar {% else %} Habilitar {% endif %}
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card text-white mb-3" style="background-color: #6000fc;">
+                <div class="card-header text-center">Detalles de la Billetera</div>
+                <div class="card-body">
+                    <table class="table table-bordered table-striped table-dark">
+                        <tbody>
+                            <tr>
+                                <th>ID</th>
+                                <td>{{ wallet.id }}</td>
+                            </tr>
+                            <tr>
+                                <th>Balance</th>
+                                <td>${{ wallet.balance }}</td>
+                            </tr>
+                            <tr>
+                                <th>CVU</th>
+                                <td>{{ wallet.cvu }}</td>
+                            </tr>
+                            <tr>
+                                <th>Alias</th>
+                                <td>{{ wallet.alias }}</td>
+                            </tr>
+                            <tr>
+                                <th>Estado</th>
+                                <td>{{ wallet.is_active|yesno:"Activo,Inactivo" }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- Enable/Disable Button -->
+            <div class="text-center">
+                <form method="GET" action="{% url 'AdminDashboardCustomers' %}" class="mb-4 text-center">
+                    <input type="hidden" name="customer_id" value="{{ customer.id }}">
+                    <input type="hidden" name="wallet_id" value="{{ wallet.id }}">
+                    <input type="hidden" name="action" value="{% if wallet.is_active %}disable{% else %}enable{% endif %}">
+                    <button id="walletDetails" type="submit" class="btn btn-primary" onclick="">
+                        {% if wallet.is_active %} Deshabilitar {% else %} Habilitar {% endif %}
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card text-white mb-3" style="background-color: #6000fc;">
+                <div class="card-header text-center">Detalles Bancarios</div>
+                <div class="card-body">
+                    <!-- Dropdown for selecting bank account -->
+                    <select id="bankAccountSelect" class="form-control mb-3">
+                        {% for account in bank_accounts %}
+                        <option value="{{ account.id }}" data-balance="{{ account.balance }}"
+                                data-cbu="{{ account.cvu }}" data-alias="{{ account.alias }}"
+                                data-bank="{{ account.bank_name }}" data-status="{{ account.is_active }}">
+                            CA $$ {{ account.cvu }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    <table class="table table-bordered table-striped table-dark">
+                        <tbody>
+                            <tr><th>ID</th><td id="accountId">{{ bank_accounts.0.id }}</td></tr>
+                            <tr><th>Balance</th><td id="accountBalance">${{ bank_accounts.0.balance }}</td></tr>
+                            <tr><th>CBU</th><td id="accountCbu">{{ bank_accounts.0.cvu }}</td></tr>
+                            <tr><th>Alias</th><td id="accountAlias">{{ bank_accounts.0.alias }}</td></tr>
+                            <tr><th>Banco</th><td id="accountBank">{{ bank_accounts.0.bank_name }}</td></tr>
+                            <tr><th>Estado</th><td id="accountStatus">{{ bank_accounts.0.is_active|yesno:"Activo,Inactivo" }}</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Enable/Disable Button -->
+            <div class="text-center">
+                <form method="GET" action="{% url 'AdminDashboardCustomers' %}" class="mb-4 text-center">
+                    <input type="hidden" name="customer_id" value="{{ customer.id }}">
+                    <input id="selectedBankAcc" type="hidden" name="bank_account_id" value="{{ bank_accounts.0.id }}">
+                    <input type="hidden" name="action" value="{% if bank_accounts.0.is_active %}disable{% else %}enable{% endif %}">
+                    <button id="bank_acc_button" type="submit" class="btn btn-primary">
+                        {% if bank_accounts.0.is_active %} Deshabilitar {% else %} Habilitar {% endif %}
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+    <script>
+document.getElementById('bankAccountSelect').addEventListener('change', function() {
+    const selectedOption = this.options[this.selectedIndex];
+    document.getElementById('accountId').textContent = selectedOption.value;
+    document.getElementById('accountBalance').textContent = `$${selectedOption.dataset.balance}`;
+    document.getElementById('accountCbu').textContent = selectedOption.dataset.cbu;
+    document.getElementById('accountAlias').textContent = selectedOption.dataset.alias;
+    document.getElementById('accountBank').textContent = selectedOption.dataset.bank;
+    document.getElementById('accountStatus').textContent = selectedOption.dataset.status === "True" ? "Activo" : "Inactivo";
+    document.getElementById('bank_acc_button').textContent = selectedOption.dataset.status === "True" ? "Deshabilitar" : "Habilitar";
+    // Update hidden input with the selected CBU
+    document.getElementById('selectedBankAcc').value = selectedOption.value;
+});
+</script>
+
+
+{% endblock content %}

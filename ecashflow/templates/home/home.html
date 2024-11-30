@@ -1,0 +1,216 @@
+{% extends 'layout/base.html' %}
+{% block title %}Home - ECashFlow{% endblock %}
+
+{% block content %}
+
+<style>
+
+    .content {
+        margin: 20px auto;
+        text-align: center;
+    }
+    .btn {
+        display: inline-block;
+        padding: 10px 20px;
+        border-radius: 5px;
+        margin: 10px;
+    }
+
+    .home-container{
+        margin-top: 7%;
+    }   
+
+</style>
+
+
+<div class="container home-container">
+    <div class="row justify-content-evenly">
+        <div class="col-sm-4">
+            <div class="content">
+                <h2>Hola {{ customerWithBalance.customer }}!</h2>
+                <h3>Balance: {{customerWithBalance.balance}}</h3>
+            </div>
+            <div class="navigation" align="center">
+                <a href="{% url 'Deposit' %}" class="btn btn-primary">Depositar</a>
+                <a href="{% url 'ContactList' %}" class="btn btn-success">Enviar Dinero</a>
+            </div>
+        </div>
+        <div class="col-sm-6" id="transactions">
+            <div class="tabs">
+                <button class="tab-button active" onclick="openTab(event, 'Tab1')">Enviado</button>
+                <button class="tab-button" onclick="openTab(event, 'Tab2')">Recibido</button>
+                <button class="tab-button" onclick="openTab(event, 'Tab3')">Depósitos</button>
+                <button class="tab-button" onclick="openTab(event, 'Tab4')">Mis Cuentas</button>
+                <select id="filterSelect" class="form-select">
+                    <option value="today">Hoy</option>
+                    <option value="3days">3 Días</option>
+                    <option value="1week">Última Semana</option>
+                    <option value="">Todos</option>
+                </select>
+            </div>
+        
+            <div id="Tab1" class="tab-content">
+                <table class="table table-hover" >
+                    <thead>
+                        <tr>
+                            <th class="td-username">Destino</th>
+                            <th class="td-amount">Monto</th>
+                            <th class="td-date">Fecha</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-sent">
+                    </tbody>
+                </table>
+            </div>
+        
+            <div id="Tab2" class="tab-content" style="display:none;">
+                <table class="table table-hover" >
+                    <thead>
+                        <tr>
+                            <th class="td-username">Orígen</th>
+                            <th class="td-amount">Monto</th>
+                            <th class="td-date">Fecha</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-received">
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="Tab3" class="tab-content" style="display:none;">
+                <table class="table table-hover" >
+                    <thead>
+                        <tr>
+                            <th class="td-amount">Monto</th>
+                            <th class="td-date">Fecha</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-deposit">
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="Tab4" class="tab-content" style="display:none;">
+                <table class="table table-hover" >
+                    <thead>
+                        <tr>
+                            <th class="td-username">Desde</th>
+                            <th class="td-username">Hacia</th>
+                            <th class="td-amount">Monto</th>
+                            <th class="td-date">Fecha</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-myaccounts">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+    
+    <!-- Modal de enviar dinero manipulado por jquery en el html base (un asco, pero bue) -->
+<div class="modal fade" id="tx-modal-base" role="dialog">
+
+</div>
+    <!-- Modal de checkear usuario manipulado por jquery en el html base (un asco, pero bue) -->
+<div class="modal fade" id="tx-modal-checkuser" role="dialog">
+
+</div>    
+
+{% endblock %}
+{% block extrajs %}
+
+<script type="text/javascript">    
+    $(document).ready(function() {
+        AttachEventToSelect();
+        $('#filterSelect').val('1week').trigger('change');
+    });
+
+    function openTab(evt, tabName) {
+        // Hide all tab contents
+        const tabContents = document.querySelectorAll('.tab-content');
+        tabContents.forEach(content => content.style.display = 'none');
+
+        // Remove active class from all tab buttons
+        const tabButtons = document.querySelectorAll('.tab-button');
+        tabButtons.forEach(button => button.classList.remove('active'));
+
+        // Show the selected tab content
+        document.getElementById(tabName).style.display = 'block';
+        evt.currentTarget.classList.add('active');
+    }
+
+    function AttachEventToSelect(){
+        $('#filterSelect').change(function() {
+            let filter = this.value;
+            console.log(filter);
+            fetch('/filter-history/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ 'filter': filter })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Update the sent transactions table
+                const sentTable = document.getElementById('table-sent');
+                sentTable.innerHTML = ''; // Clear current table content
+                if (data.sent_content == true) {
+                    data.sent.forEach(item => {
+                        let row = sentTable.insertRow();
+                        row.innerHTML = `<td>${item.destination_customer_id}</td><td>${item.amount}</td><td>${item.created_date}</td>`;
+                    });
+                }
+                else{
+                    let row = sentTable.insertRow();
+                    row.innerHTML = "<td colspan='3' class='text-center'>No hay transacciones para mostrar</td>"
+                }
+
+                // Update the received transactions table
+                const receivedTable = document.getElementById('table-received');
+                receivedTable.innerHTML = ''; // Clear current table content
+                if (data.received_content == true) {
+                    data.received.forEach(item => {
+                        let row = receivedTable.insertRow();
+                        row.innerHTML = `<td>${item.origin_customer_id}</td><td>${item.amount}</td><td>${item.created_date}</td>`; 
+                    });
+                }
+                else{
+                    let row = receivedTable.insertRow();
+                    row.innerHTML = "<td colspan='3' class='text-center'>No hay transacciones para mostrar</td>"
+                }
+                
+                // Update Deposits
+                const depositTable = document.getElementById('table-deposit');
+                depositTable.innerHTML = ''; // Clear current table content
+                if (data.deposit_content == true) {
+                    data.deposit.forEach(item => {
+                        let row = depositTable.insertRow();
+                        row.innerHTML = `<td>${item.amount}</td><td>${item.created_date}</td>`; 
+                    });
+                }
+                else{
+                    let row = depositTable.insertRow();
+                    row.innerHTML = "<td colspan='3' class='text-center'>No hay transacciones para mostrar</td>"
+                }
+                
+                // Update My Accounts
+                const myAccountsTable = document.getElementById('table-myaccounts');
+                myAccountsTable.innerHTML = ''; // Clear current table content
+                if (data.myaccounts_content == true) {
+                    data.myaccounts.forEach(item => {
+                        let row = myAccountsTable.insertRow();
+                        row.innerHTML = `<td>${item.origin}</td><td>${item.destination}</td><td>${item.amount}</td><td>${item.created_date}</td>`; 
+                    });
+                }
+                else{
+                    let row = myAccountsTable.insertRow();
+                    row.innerHTML = "<td colspan='3' class='text-center'>No hay transacciones para mostrar</td>"
+                }
+            });
+        });
+    }
+</script>
+{% endblock %}

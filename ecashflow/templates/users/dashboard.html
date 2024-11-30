@@ -1,0 +1,139 @@
+{% extends 'layout/base.html' %}
+{% block title %}Home - ECashFlow{% endblock %}
+
+{% block content %}
+<title>ECashFlow - Panel de Control</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .header {
+            background-color: #6000fc;
+            color: #ffffff;
+            padding: 20px 0;
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        h2 {
+            margin-top: 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .button-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .button {
+            display: inline-block;
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            margin-right: 10px;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+<body>
+    <div class="container">
+
+        <form action="{% url 'Dashboard' %}" method="post">
+            {% csrf_token %}
+            <h2 class="text-center">Información Personal</h2>
+            <table>
+                <tr>
+                    <th>Nombre Completo</th>
+                    <td>{{ customerFullName }}</td> 
+                </tr>
+                <tr>
+                    <th>Email</th>
+                    <td>{{ customerWithAlias.customer.email }}</td>
+                </tr>
+                <tr>
+                    <th>Cvu</th>
+                    <td>{{ customerWithAlias.cvu}}</td>
+                </tr>
+                <tr>
+                    <th>Alias</th>
+                    <td>{{ customerWithAlias.alias}}</td>
+                </tr>
+                <tr>
+                    <th>Cuit</th>
+                    <td>{{ customerWithAlias.customer.cuit }}</td>
+                </tr>
+                <tr>
+                    <th>Tipo de Persona</th>
+                    <td>{{ customerWithAlias.customer.customer_type.name }}</td>     
+                </tr>
+                <tr>
+                    <th>Origen de los Fondos</th>
+                    <td>{{ customerWithAlias.customer.funds_source.name }}</td>
+                </tr>
+                <tr>
+                    <th>Estado Marital</th>
+                    <td>{{ customerWithAlias.customer.marital_status.name }}</td>     
+                </tr>
+                <tr>
+                    <th>Profesión</th>
+                    <td>{{ customerWithAlias.customer.profession.name }}</td>     
+                </tr>
+                <tr>
+                    <th>Situación Impositiva</th>
+                    <td>{{ customerWithAlias.customer.tax_situation.name }}</td>     
+                </tr>
+    
+                <tr>
+                    <th>Persona Políticamente Expuesta</th>
+                    {% if customerWithAlias.customer.isPeP %}
+                        <td>Si</td>     
+                    {% else %}
+                        <td>No</td>     
+                    {% endif %}      
+                </tr>
+                <tr>
+                    <th>Sujeto Obligado</th>
+                    {% if customerWithAlias.customer.isLB %}
+                        <td>Si</td>     
+                    {% else %}
+                        <td>No</td>     
+                    {% endif %}
+                </tr>
+    
+            </table>
+
+            <div class="button-container">
+                <a href="{% url 'UpdateEmail' %}" class="btn btn-primary">Cambio de Email</a>
+                <a href="{% url 'UpdatePassword' %}" class="btn btn-primary">Cambio de Contraseña</a>
+            </div>
+            <div class="button-container">
+                <a href="{% url 'Home' %}" class="btn btn-secondary">Volver</a>
+            </div>
+        </form>
+
+    </div>
+</body>
+{% endblock content %}

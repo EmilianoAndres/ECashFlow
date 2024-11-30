@@ -1,0 +1,71 @@
+{% extends 'layout/base.html' %}
+{% block title %}Home - ECashFlow{% endblock %}
+
+{% block content %}
+    <title>Boletas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .header {
+            padding: 20px 0;
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+        }
+        h2 {
+            margin-top: 0;
+        }
+        .upload-container {
+            margin-top: 20px;
+        }
+        .button-container {
+            margin-top: 20px;
+        }
+        .button {
+            display: inline-block;
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        .success-message {
+            font-size: 18px;
+            color: #28a745;
+            margin-top: 20px;
+        }
+    </style>
+<body>
+    <div class="header">
+        <h1>Pago de Documentos</h1>
+    </div>
+    <div class="container">
+        <h2>Información del Pago</h2>
+        <form action="{% url 'CreatePayment' %}" method="post">
+            {% csrf_token %}
+            <p>Prestador de Servicios: </p><input type="text" id="vendor" name="vendor" value={{ paymentInfo.vendor }} readonly="readonly">
+            <p>Número de Boleta: </p><input type="text" id="paymentNumber" name="paymentNumber" value={{ paymentInfo.paymentNumber }} readonly="readonly">
+            <p>Fecha de Vencimiento: </p><input type="text" id="duedate" name="duedate" value={{ paymentInfo.duedate }} readonly="readonly">
+            <p>Monto: </p><input type="text" id="amount" name="amount" value={{ paymentInfo.amount }} readonly="readonly">
+            <div class="button-container">
+                <button class="button" type="submit">Procesar el Pago</button>
+            </div>
+        </form>
+    </div>
+</body>
+{% endblock content %}

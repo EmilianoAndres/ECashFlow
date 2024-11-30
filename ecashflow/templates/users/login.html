@@ -1,0 +1,38 @@
+{% extends 'layout/baseLoginRegister.html' %}
+{% block title %}Register - ECashFlow{% endblock %}
+
+{% block content %}
+
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-12">
+                <h2 class="text-center mt-3">Sign in to ECashFlow</h2>
+                <div class="form-container mt-1">
+                    <form action="{% url 'Login' %}" method="post">
+                        {% csrf_token %}
+    
+                        <div class="form-group">
+                            <label for="username" class="float-left">Email:</label>
+                            <input type="text" id="username" name="username" class="form-control">
+                        </div>
+    
+                        <div class="form-group">
+                            <label for="password" class="float-left">Password:</label>
+                            <input type="password" id="password" name="password" class="form-control">
+                        </div>
+                        <div class="form-group text-center mt-4">
+                            <input type="submit" class="btn btn-primary" value="Sign In">
+                        </div>
+                        <div class="text-center mt-3">
+                            <a href="{% url 'ForgotPassword' %}" class="btn btn-secondary">¿Olvidaste tu contraseña?</a>
+                        </div>
+                        <div class="text-center mt-3">
+                            <a href="{% url 'UploadDni' %}">¿No tenés una cuenta? Registrate acá</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

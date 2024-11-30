@@ -1,0 +1,18 @@
+{% block notifications %}
+    <div class="text-end mb-4">
+        <a href="{% url 'notifications:list' %}" class="btn btn-primary">
+            <i class="fa-solid fa-arrow-left"></i>
+        </a>
+    </div>
+
+    <div class="card border-{{ notif.level }}">
+        <div class="card-header bg-{{ notif.level }}">
+            {{ notif.timestamp }}
+            {{ notif.title }}
+        </div>
+
+        <div class="card-body">
+            <pre>{{ notif.message }}</pre>
+        </div>
+    </div>
+{% endblock %}

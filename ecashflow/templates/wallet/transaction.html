@@ -1,0 +1,45 @@
+{% extends 'layout/base.html' %}
+{% block content %}
+
+<div class="row justify-content-center" style="margin-top: 15%;">
+    <div class="col-6">
+        <form action="{% url 'Transaction' contact_id %}" method="post" class="d-flex flex-column align-items-center">
+            {% csrf_token %}
+            <input type="text" id="moneyInput" name="amount" class="hidden-input">
+            
+            <div id="displayNumber" class="floating-number">$0.00</div>
+            
+            <button class="btn" id="submit-transfer" type="submit" style="margin-top: 20px;">Transferir</button>
+        </form>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function() {
+        let value = 0;
+
+        function updateDisplay(value) {
+            $('#displayNumber').text('$' + value.toFixed(2));
+        }
+
+        $('#moneyInput').on('keydown', function(e) {
+            if (e.which >= 48 && e.which <= 57) {
+                let newValue = e.which - 48;
+                value = value * 10 + newValue / 100;
+                updateDisplay(value);
+                
+            }
+
+            if (e.which === 8) {
+                value = Math.floor(value * 100) / 10 / 100;
+                updateDisplay(value)
+            }
+        });
+
+        $(document).on('click', function() {
+            $('#moneyInput').focus();
+        });
+    });
+</script>
+{% endblock %}
