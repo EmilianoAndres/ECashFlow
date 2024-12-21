@@ -1,0 +1,210 @@
+{% extends 'admin/base.html' %}
+{% block title %}Home - ECashFlow{% endblock %}
+
+{% block content %}
+<body>
+    <div class="container mt-4">
+        <h2 class="text-center">Transaction History</h2>
+
+        <!-- Search form for filtering by Email/SSN, Amount Range, Time Frame, and Date Range -->
+        <form method="GET" action="{% url 'AdminDashboardTransactions' %}" class="mb-4">
+            <!-- First account input (Email/SSN) and Origin/Destination checkbox -->
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <input type="text" class="form-control mb-2" name="account_holder1" placeholder="Enter Email or SSN (Account 1)">
+                </div>
+                <div class="col-md-2 text-center">
+                    <input type="checkbox" name="is_origin1" id="is_origin1">
+                    <label for="is_origin1">Account 1 is Origin</label>
+                </div>
+            </div>
+
+            <!-- Second account input (Email/SSN) and its Origin/Destination checkbox -->
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <input type="text" class="form-control mb-2" name="account_holder2" placeholder="Enter Email or SSN (Account 2)">
+                </div>
+                <div class="col-md-2 text-center">
+                    <input type="checkbox" name="is_origin2" id="is_origin2">
+                    <label for="is_origin2">Account 2 is Origin</label>
+                </div>
+            </div>
+
+            <!-- Min and Max Amount inputs -->
+            <div class="row justify-content-center">
+                <div class="col-md-3">
+                    <input type="number" class="form-control mb-2" name="min_amount" placeholder="Minimum Amount">
+                </div>
+                <div class="col-md-3">
+                    <input type="number" class="form-control mb-2" name="max_amount" placeholder="Maximum Amount">
+                </div>
+            </div>
+
+            <!-- Radio buttons for time filtering -->
+            <div class="row justify-content-center">
+                <div class="col-md-6 text-center">
+                    <label class="mr-3">
+                        <input type="radio" name="time_filter" value="15_min"> Last 15 min
+                    </label>
+                    <label class="mr-3">
+                        <input type="radio" name="time_filter" value="1_hour"> Last 1 hour
+                    </label>
+                    <label>
+                        <input type="radio" name="time_filter" value="12_hours"> Last 12 hours
+                    </label>
+                </div>
+            </div>
+
+            <!-- Date range pickers -->
+            <div class="row justify-content-center mt-2">
+                <div class="col-md-3">
+                    <input type="date" class="form-control mb-2" name="start_date" placeholder="Start Date">
+                </div>
+                <div class="col-md-3">
+                    <input type="date" class="form-control mb-2" name="end_date" placeholder="End Date">
+                </div>
+            </div>
+
+            <!-- Search button -->
+            <div class="text-center mt-3">
+                <button type="submit" class="btn btn-primary">Search</button>
+            </div>
+        </form>
+    </div>
+
+        <!-- Displaying transaction information (same as before) -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card text-white mb-3" style="background-color: #6000fc;">
+                    <div class="card-header text-center">Transaction Details</div>
+                    <div class="card-body">
+                        <table class="table table-bordered table-striped table-dark">
+                            <thead>
+                                <tr>
+                                    <th>Transaction ID</th>
+                                    <th>Amount</th>
+                                    <th>From Account</th>
+                                    <th>To Account</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for transaction in page_obj %}
+                                <tr>
+                                    <td>{{ transaction.unique_id }}</td>
+                                    <td>${{ transaction.amount }}</td>
+                                    {% if transaction.origin_acc.bank_name != "ECashFlow"%}
+                                    <td>CA $$ {{ transaction.origin_acc.customer.full_name }}</td>
+                                    {% else %}
+                                    <td>{{ transaction.origin_acc.customer.full_name }}</td>
+                                    {% endif %}
+                                    {% if transaction.destination_customer %}
+                                        {% if transaction.destination_acc.bank_name != "ECashFlow" %}
+                                        <td>CA $$ {{ transaction.destination_customer.full_name }}</td>
+                                        {% else %}
+                                        <td>{{ transaction.destination_customer.full_name }}</td>
+                                        {% endif %}
+                                    {% else %}
+                                    <td>{{ transaction.destination_vendor.name }}</td>
+                                    {% endif %}
+                                    <td>{{ transaction.created_date }}</td>
+                                    <td>{{ transaction.is_active|yesno:"Active,Disputed" }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pagination buttons -->
+        <div class="row justify-content-center mt-4">
+            <div class="col-md-6 text-center">
+                <nav>
+                    <ul class="pagination">
+                        {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        {% endif %}
+
+                        {% for num in page_obj.paginator.page_range %}
+                        <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                        </li>
+                        {% endfor %}
+
+                        {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript for managing Origin checkboxes and form submission -->
+    <script>
+        // JavaScript to ensure only one of the two Origin checkboxes is selected
+        function toggleOrigin(selected) {
+            const isOrigin1 = document.getElementById('is_origin1');
+            const isOrigin2 = document.getElementById('is_origin2');
+
+            if (selected === 'origin1' && isOrigin1.checked) {
+                isOrigin2.checked = false;  // Uncheck the second origin checkbox if the first is selected
+            } else if (selected === 'origin2' && isOrigin2.checked) {
+                isOrigin1.checked = false;  // Uncheck the first origin checkbox if the second is selected
+            }
+        }
+
+        // JavaScript to clear radio buttons when a date is picked
+        function clearRadioButtons() {
+            const radios = document.getElementsByName('time_filter');
+            for (let i = 0; i < radios.length; i++) {
+                radios[i].checked = false;
+            }
+        }
+
+        // Form submission handling to send the simplified parameters
+        document.getElementById('transaction-form').addEventListener('submit', function(event) {
+            event.preventDefault();  // Prevent the default form submission
+
+            const accountHolder1 = document.getElementById('account_holder1').value;
+            const accountHolder2 = document.getElementById('account_holder2').value;
+            const isOrigin1 = document.getElementById('is_origin1').checked;
+            const isOrigin2 = document.getElementById('is_origin2').checked;
+
+            const params = new URLSearchParams();
+            if (accountHolder1) {
+                params.append('account_holder1', accountHolder1);
+                if (isOrigin1) {
+                    params.append('is_origin1', 'true');
+                }
+            }
+
+            if (accountHolder2) {
+                params.append('account_holder2', accountHolder2);
+                if (isOrigin2) {
+                    params.append('is_origin2', 'true');
+                }
+            }
+
+            // Add other form fields if necessary (like min_amount, max_amount, etc.)
+
+            // Submit the form with the constructed query parameters
+            window.location.href = 'transactions?' + params.toString();
+        });
+    </script>
+</body>
+
+
+
+{% endblock content %}

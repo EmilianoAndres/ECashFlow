@@ -1,0 +1,96 @@
+{% extends 'admin/base.html' %}
+{% block title %}Home - ECashFlow{% endblock %}
+
+{% block content %}
+<body>
+    <div class="container mt-4">
+        <h2 class="text-center">Vendor Administration</h2>
+
+        <!-- Search form for filtering by Email, SSN, Phone Number, and Inactive checkbox -->
+        <form method="GET" action="{% url 'AdminDashboardVendors' %}" class="mb-4">
+            <div class="row justify-content-center">
+                <div class="col-md-4">
+                    <input type="text" class="form-control mb-2" name="search" placeholder="Enter Code, Name, or SSN">
+                </div>
+            </div>
+
+            <!-- Search button -->
+            <div class="text-center mt-3">
+                <button type="submit" class="btn btn-primary">Search</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Vendor details and wallet details tables -->
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card text-white mb-3" style="background-color: #6000fc;">
+                <div class="card-header text-center">Vendor Details for {{ vendor.name }}</div>
+                <div class="card-body">
+                    <table class="table table-bordered table-striped table-dark">
+                        <tbody>
+                            <tr>
+                                <th>Vendor ID</th>
+                                <td>{{ vendor.id }}</td>
+                            </tr>
+                            <tr>
+                                <th>Vendor Code</th>
+                                <td>{{ vendor.code }}</td>
+                            </tr>
+                            <tr>
+                                <th>Vendor SSN</th>
+                                <td>{{ vendor.cuit }}</td>
+                            </tr>
+                            <tr>
+                                <th>Full Holder's Name</th>
+                                <td>{{ vendor.holder_name }}</td>
+                            </tr>
+                            <tr>
+                                <th>Vendor Type</th>
+                                <td>{{ vendor_type.name }}</td>
+                            </tr>
+                            <tr>
+                                <th>Status</th>
+                                <td>{{ vendor.is_active|yesno:"Active,Inactive" }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card text-white mb-3" style="background-color: #6000fc;">
+                <div class="card-header text-center">Escrow's Wallet Details</div>
+                <div class="card-body">
+                    <table class="table table-bordered table-striped table-dark">
+                        <tbody>
+                            <tr>
+                                <th>Wallet ID</th>
+                                <td>{{ wallet.id }}</td>
+                            </tr>
+                            <tr>
+                                <th>Balance</th>
+                                <td>${{ wallet.balance }}</td>
+                            </tr>
+                            <tr>
+                                <th>Wallet Number</th>
+                                <td>{{ wallet.cvu }}</td>
+                            </tr>
+                            <tr>
+                                <th>Wallet Alias</th>
+                                <td>{{ wallet.alias }}</td>
+                            </tr>
+                            <tr>
+                                <th>Status</th>
+                                <td>{{ wallet.is_active|yesno:"Active,Inactive" }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+{% endblock content %}

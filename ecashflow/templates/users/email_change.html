@@ -1,0 +1,65 @@
+{% extends 'layout/base.html' %}
+{% block title %}Home - ECashFlow{% endblock %}
+
+{% block content %}
+<title>ECashFlow - Panel de Control - Cambio De Email</title>
+    <style>
+        .content {
+            margin: 20px auto;
+            text-align: center;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 5px;
+            margin: 10px;
+        }
+
+        .home-container{
+            margin-top: 7%;
+        } 
+        #tittle{
+            background-color: #6000fc;
+        }
+        .btn-ecash{
+                background-color: #6000fc;
+                color: white;
+        }   
+        .btn-ecash:hover{
+            color: white;
+            background-color: #6000fc;
+            opacity: 0.9;
+        }
+    </style>
+<body>
+
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card shadow-sm">
+                    <div class="card-header text-center text-white" id="tittle">
+                        <h4 class="mb-0">Cambio de Email</h4>
+                    </div>
+                    <div class="card-body">
+                        <form action="{% url 'UpdateEmail' %}" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">Email Actual</span>
+                                <input type="text" class="form-control" disabled value="{{email}}">
+                            </div>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">Nuevo Email</span>
+                                <input type="text" class="form-control" name="email">
+                            </div>
+                            <div class="d-flex justify-content-center">
+                                <input type="submit" class="btn btn-ecash w-75" value="Cambiar Email">
+                            </div>
+                            <a href="{% url 'Home' %}" class="btn btn-secondary">Volver</a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+{% endblock content %}

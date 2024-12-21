@@ -1,0 +1,54 @@
+{% extends 'layout/baseLoginRegister.html' %}
+{% block title %}Registro - ECashFlow{% endblock %}
+
+{% block content %}
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .header {
+            padding: 20px 0;
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+        }
+        h2 {
+            margin-top: 0;
+        }
+    </style>
+<body>
+
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-12">
+                <h2 class="text-center mt-3">Suba una foto de su documento para comenzar</h2>
+                <div class="form-container mt-1">
+                    <form action="{% url 'UploadDni' %}" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="input-group mb-3">
+                            <input type="file" class="form-control" name="file">
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'Login' %}" class="btn btn-danger">Volver</a>
+
+                            <button class="btn btn-primary w-25" type="submit">Enviar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+{% endblock content %}

@@ -1,0 +1,31 @@
+{% extends 'layout/baseLoginRegister.html' %}
+{% block title %}Registro - ECashFlow{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+        <div class="content">
+            <h2 class="text-center mt-3">Registrate en ECashFlow</h2>
+            <div class="form-container">
+                <form action="{% url 'Register' %}" method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <input type="hidden" value="{{token}}" id="token" name="token">
+                    <div class="form-group text-center mt-4">
+                        <input type="submit" class="btn btn-primary" value="Register">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function (){
+            $("select").addClass("form-select");
+            $('#id_password').attr("placeholder", "");
+        });
+    </script>
+
+{% endblock %}
+
+

@@ -1,0 +1,70 @@
+{% extends 'layout/base.html' %}
+{% block title %}Finish Deposit - ECashFlow{% endblock %}
+
+{% block content %}
+
+<style>
+    .success-sign {
+        width: 100px;
+        height: 100px;
+        background-color: #4CAF50; 
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: 20px;
+    }
+
+    .checkmark {
+        color: white; 
+        font-size: 50px;
+    }
+
+    .error-sign {
+        width: 100px;
+        height: 100px;
+        background-color: #f44336;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: 20px;
+    }
+
+    .cross {
+        color: white;
+        font-size: 50px; 
+        font-style: normal;
+    }
+
+    .full-screen {
+        height: 90vh;
+    }   
+</style>
+
+<div class="container deposit-container">
+    <div class="row justify-content-center align-items-center full-screen">
+        {% if permission %}
+            <div class="col-sm-6 text-center">
+                <div class="success-sign">
+                    <i class="checkmark">✔</i>
+                </div>
+                <p>Todo salio bien!</p>
+            </div>
+        {% else %}
+            <div class="col-sm-6 text-center">
+                <div class="error-sign ">
+                    <i class="cross">✖</i>
+                </div>
+                <p>Algo salio mal!</p>
+            </div>
+        {% endif %}
+    </div>
+    
+</div>
+
+{% endblock %}

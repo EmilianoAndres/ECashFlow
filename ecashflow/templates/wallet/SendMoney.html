@@ -1,0 +1,18 @@
+{% extends 'layout/base.html' %}
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-6">
+        <h3>Ingrese la cantidada a enviar</h3>
+        <input type="text" name="money" id="money" placeholder="0,00">
+        <a href="{% url 'SendMoney' contact_id %}"><button class="btn btn-primary" type="submit">Enviar</button></a>
+    </div>
+</div>
+
+{% endblock %}
+
+
+
+
+
+

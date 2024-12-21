@@ -1,0 +1,123 @@
+{% extends 'layout/base.html' %}
+{% block title %}Bank Account Integration - ECashFlow{% endblock %}
+
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bank Account Home</title>
+    <style>
+        .content {
+            margin: 20px auto;
+            text-align: center;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 5px;
+            margin: 10px;
+        }
+        .account-details {
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .account-info {
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        .btn-primary {
+            background-color: #6000fc;
+            border-color: #6000fc;
+        }
+        .btn-primary:hover{
+            background-color: #6000fc;
+            border-color: #6000fc;
+            opacity: 0.9;
+        }
+        #tittle{
+            background-color: #6000fc;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-header text-center text-white" id="tittle">
+                    <h4 class="mb-0" >Cajas de Ahorro</h4>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <label for="bankAccountsDropdown" class="form-label"><strong>Seleccionar Cuenta</strong></label>
+                        <select class="form-select" name="bank_accounts" id="bankAccountsDropdown" onchange="updateAccountDetails()">
+                            {% for account in bankAccs %}
+                                <option 
+                                    value="{{ account.cbu }}" 
+                                    data-customer="{{ account.customer }}" 
+                                    data-cuit="{{ account.cuit }}" 
+                                    data-alias="{{ account.alias }}" 
+                                    data-balance="{{ account.balance }}">
+                                    CA $$ {{ account.cbu }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div id="accountDetails" class="mb-4">
+                        <div class="mb-2"><strong>Titular: </strong><span id="accountCustomer">{{ bankAccs.0.customer }}</span></div>
+                        <div class="mb-2"><strong>CUIT: </strong><span id="accountCuit">{{ bankAccs.0.cuit }}</span></div>
+                        <div class="mb-2"><strong>Número de Cuenta: </strong><span id="accountCbu">{{ bankAccs.0.cbu }}</span></div>
+                        <div class="mb-2"><strong>Alias de Cuenta: </strong><span id="accountAlias">{{ bankAccs.0.alias }}</span></div>
+                        <div><strong>Saldo Actual: </strong>$ <span id="accountBalance">{{ bankAccs.0.balance }}</span></div>
+                    </div>
+
+                    <form action="{% url 'SendMoneyFromBank' %}" method="post" id="bankForm">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="amount" class="form-label"><strong>Monto a Enviar</strong></label>
+                            <input type="number" class="form-control" name="amount" id="amount" placeholder="0,00">
+                        </div>
+                        <input type="hidden" name="selected_account_cbu" id="selectedAccountCbu" value="{{ bankAccs.0.cbu }}">
+                        <div class="d-flex justify-content-center">
+                            <input type="submit" class="btn btn-primary w-75" value="Enviá dinero a tu billetera!" onclick="handleSubmit(event)">
+                        </div>
+                        <a href="{% url 'Home' %}" class="btn btn-secondary">Volver</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    function updateAccountDetails() {
+        const $dropdown = $('#bankAccountsDropdown');
+        const $selectedOption = $dropdown.find(':selected');
+
+        $('#accountCustomer').text($selectedOption.data('customer'));
+        $('#accountCuit').text($selectedOption.data('cuit'));
+        $('#accountCbu').text($selectedOption.val());
+        $('#accountAlias').text($selectedOption.data('alias'));
+        $('#accountBalance').text($selectedOption.data('balance'));
+
+        $('#selectedAccountCbu').val($selectedOption.val());
+    }
+
+    function handleSubmit(event) {
+        // Prevent the form from submitting immediately
+        event.preventDefault();
+
+        // Update account details before submission
+        updateAccountDetails();
+
+        // Submit the form after updating the hidden input
+        $('#bankForm').submit();
+    }
+</script>
+</body>
+{% endblock content %}

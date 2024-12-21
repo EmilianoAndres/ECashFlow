@@ -1,0 +1,118 @@
+{% extends 'layout/base.html' %}
+{% block title %}Home - ECashFlow{% endblock %}
+
+{% block content %}
+<title>ECashFlow - Panel de Control</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            background-color: #6000fc;
+            color: #ffffff;
+            padding: 12px 0;
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+        }
+        h2 {
+            margin-top: 0;
+        }
+
+        .btn-ecash{
+            background-color: #6000fc;
+            color: white;
+        }
+        
+        .btn-ecash:hover{
+            color: white;
+            background-color: #6000fc;
+            opacity: 0.9;
+        }
+
+    </style>
+<body>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-10 col-lg-8">
+                <div class="card shadow-sm">
+                    <div class="card-header text-center header text-white">
+                        <h4 class="mb-0">Información Personal</h4>
+                    </div>
+                    <div class="card-body">
+                        <form action="{% url 'Dashboard' %}" method="post">
+                            {% csrf_token %}
+                            
+                            <!-- Personal Information Section -->
+                            <div class="personal-info">
+                                <div class="mb-3">
+                                    <strong>Nombre Completo:</strong>
+                                    <span>{{ customerFullName }}</span>
+                                </div>
+                                <div class="mb-3">
+                                    <strong>Email:</strong>
+                                    <span>{{ customerWithAlias.customer.email }}</span>
+                                </div>
+                                <div class="mb-3">
+                                    <strong>Cvu:</strong>
+                                    <span>{{ customerWithAlias.cvu }}</span>
+                                </div>
+                                <div class="mb-3">
+                                    <strong>Alias:</strong>
+                                    <span>{{ customerWithAlias.alias }}</span>
+                                </div>
+                                <div class="mb-3">
+                                    <strong>Cuit:</strong>
+                                    <span>{{ customerWithAlias.customer.cuit }}</span>
+                                </div>
+                                <div class="mb-3">
+                                    <strong>Tipo de Persona:</strong>
+                                    <span>{{ customerWithAlias.customer.customer_type.name }}</span>
+                                </div>
+                                <div class="mb-3">
+                                    <strong>Origen de los Fondos:</strong>
+                                    <span>{{ customerWithAlias.customer.funds_source.name }}</span>
+                                </div>
+                                <div class="mb-3">
+                                    <strong>Estado Marital:</strong>
+                                    <span>{{ customerWithAlias.customer.marital_status.name }}</span>
+                                </div>
+                                <div class="mb-3">
+                                    <strong>Profesión:</strong>
+                                    <span>{{ customerWithAlias.customer.profession.name }}</span>
+                                </div>
+                                <div class="mb-3">
+                                    <strong>Situación Impositiva:</strong>
+                                    <span>{{ customerWithAlias.customer.tax_situation.name }}</span>
+                                </div>
+                                <div class="mb-3">
+                                    <strong>Persona Políticamente Expuesta:</strong>
+                                    <span>{% if customerWithAlias.customer.isPeP %}Si{% else %}No{% endif %}</span>
+                                </div>
+                                <div class="mb-3">
+                                    <strong>Sujeto Obligado:</strong>
+                                    <span>{% if customerWithAlias.customer.isLB %}Si{% else %}No{% endif %}</span>
+                                </div>
+                            </div>
+    
+                            <!-- Button Section -->
+                            <div class="d-flex justify-content-center flex-wrap">
+                                <div class="mb-2">
+                                    <a href="{% url 'UpdateEmail' %}" class="btn btn-ecash me-2">Cambio de Email</a>
+                                    <a href="{% url 'UpdatePassword' %}" class="btn btn-ecash">Cambio de Contraseña</a>
+                                </div>
+                            </div>
+                            <a href="{% url 'Home' %}" class="btn btn-secondary mt-2">Volver</a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</body>
+{% endblock content %}

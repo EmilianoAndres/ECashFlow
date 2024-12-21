@@ -1,0 +1,73 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+    <script type="text/javascript" src="../../static/jquery-3.7.1.min.js"></script>
+    <title>{% block title %}ECashFlow{% endblock %}</title>
+</head>
+<body>
+
+{% block errors %}
+    {% if messages %}
+        <div class="modal fade" id="modal-error" role="dialog">
+            {% include 'layout/error.html' with messages=messages %}
+        </div>
+        <script type="application/javascript">
+        $(document).ready(function(){
+            $('#modal-error').modal('show');
+        })
+    </script>
+    {% endif %}
+{% endblock %}
+
+    <div class="row">
+        <div class="col-12 purple-top">
+        <div class="row justify-content-between">
+            <div class="col-4">
+                <h1 class="app-title">ECashFlow</h1>
+            </div>
+            <div class="col-2 text-center">
+                <h3 class="username">{{request.user.username}}</h3>
+            </div>
+        </div>
+        </div>
+        <div class="col-2 nav-container">
+            <div class="d-flex align-items-start right-nav">
+                <div class="nav flex-column me-3" role="tablist" aria-orientation="vertical">
+                    <a href="{% url 'AdminDashboard' %}"><button class="nav-link" role="tab" aria-selected="true">Mi Dashboard</button></a>
+                    <a href="{% url 'AdminDashboardCustomers' %}"><button class="nav-link" role="tab" aria-selected="true">Clientes</button></a>
+                    <a href="{% url 'AdminDashboardVendors' %}"><button class="nav-link" role="tab" aria-selected="true">Prestadores de Servicio</button></a>
+                    <a href="{% url 'AdminDashboardTransactions' %}"><button class="nav-link" role="tab" aria-selected="true">Transacciones</button></a>
+                    <a href="{% url 'Logout' %}"><button class="nav-link" role="tab" aria-selected="true">Desloguearse</button></a>
+                </div>
+              </div>
+        </div>
+        <div class="col-10 app-container">
+            {% block content %}
+            {% endblock content %}
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>
+
+{% block extrajs %}
+    <script>
+        // UNA BOCHA DE JAVASCRIPT FULERO PORQUE EL FRONTEND ES UNA PORQUERÍA
+        // esto impide que el form del checkUser refresque la página y se pierda el loading del 2do modal
+        $(document).ready(function() {
+        $('#checkUserForm').on('submit', function(event) {
+            event.preventDefault();  // Previene los eventos por defecto del DOM
+            // podés pegar llamadas ajax acá también eh
+            });
+        });
+    </script>
+
+{% endblock extrajs %}
